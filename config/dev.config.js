@@ -1,3 +1,4 @@
+//stores the morgan_format and db information into var 'config'
 const config = {
     morgan_format: 'dev',
     db: {
@@ -8,4 +9,5 @@ const config = {
 
 }
 
+//es6 default export to config/index.js
 export default config;

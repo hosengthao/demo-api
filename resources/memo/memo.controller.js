@@ -4,14 +4,14 @@ import {query} from "../../lib/db.js";
 //asynchronous function to post(create). 2 variables are created req(request) and res (response)
 async function post(req, res) {
     //create new const 'cql' and set it = cql code
-    //cql code inserts the values into table called hthao.name in the order of id, then content
-    //id is set to a function "now()" and content is set to a variable "?". This ? helps to prevent SQL/CQL injection from outside
+    //cql code inserts the values into table called hthao.memo_by_user in the order of id, create_timestamp, user_id, content, then tag
+    //id is set to a function "now()", create_timestamp is set to function called toTimestamp with a nested now function the rest are set to a variable "?". This ? helps to prevent SQL/CQL injection from outside
     const cql = `
         INSERT INTO hthao.memo_by_user (id, create_timestamp, user_id, content, tag)
         VALUES(now(), toTimestamp(now()), ?, ?, ?);
     `;
-    //creates a constant array called params. this will replace the "?" in the above statement
-    //this params is set to the what is listed under content in the body of the request
+    //creates a constant array called params. this will replace the "?"s in the above statement
+    //the items in the array 'params' are set to the what is listed in the body of the request
     const params = [
         req.body.user_id,
         req.body.content,
@@ -33,12 +33,12 @@ async function post(req, res) {
     }
 }
 
-//asynchronous function to get all rows from the table called hthao.memo with a limit to 500 rows
+//asynchronous function to get all rows by user from the table called hthao.memo by unique user id
 async function getAll(req, res){
     const cql = `
         SELECT * FROM hthao.memo_by_user WHERE user_id = ?;
     `;
-    //there are no parameters because we are returning all rows without any conditions
+    //we are setting our params to the user_id from the request body
     const params = [
         req.body.user_id
     ];
@@ -56,12 +56,14 @@ async function getAll(req, res){
     }
 }
 
-//async function to get the row by the specific id from table hthao.memo where the id is a parameter
+//async function to get the row by the specific id from table hthao.memo_by_user where the id, user_id and create_timestamp are parameter
 async function getById(req, res) {
+    //needed to get by all parts of the primary key of table 'memo_by_user' in order for us to not get an error.
     const cql = `
         SELECT * FROM hthao.memo_by_user WHERE id= ? AND user_id = ? AND create_timestamp = ?;
     `;
-    //new variable params is = the id from the URL
+    //variable params is = the id from the URL, user_id from body of request, and create_timestamp date from request body
+    //need to put into a date function because error for date format
     const params = [
         req.params.id,
         req.body.user_id,
@@ -89,14 +91,14 @@ async function getById(req, res) {
     }
 }
 
-//async function to update the content a row on the table hthao.memo by the specific id where both the content and id are variables.
+//async function to update the content a row on the table hthao.memo_by_user by the id,timestamp and user_id where both the content and the rest are variables.
 async function put(req, res) {
     const cql = `
         UPDATE hthao.memo_by_user SET content = ? WHERE id= ? AND create_timestamp = ? AND user_id = ?;
     `;
     //since we have two ?'s and content is the first "?" then the first item in our array has to be for the content variable.
     //content variable comes from content section in the body from the request
-    //id variable comes from the id in the URL
+    //id variable comes from the id in the URL, content, create_timestamp, and user_id come from request body
     const params = [
         req.body.content,
         req.params.id,
@@ -122,12 +124,12 @@ async function put(req, res) {
     }
 }
 
-//async function to delete a row from the table based on a specific id
+//async function to delete a row from the table based on id, create_timestamp, and user_id
 async function del(req, res) {
     const cql = `
         DELETE FROM hthao.memo_by_user WHERE id= ? AND create_timestamp = ? AND user_id = ?;
     `;
-    //the id variable comes from the URL
+    //the id variable comes from the URL, date and user_id come from body of request
     const params = [
         req.params.id,
         new Date(req.body.create_timestamp),

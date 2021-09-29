@@ -1,4 +1,4 @@
-//es6 named import for 'query' from db.js file and create token from jwt.js file
+//es6 named import for 'query' from db.js file and create token from jwt.js file and createToken function from jwt file
 import {query} from "../../lib/db.js";
 import {createToken} from "../../lib/jwt.js";
 
