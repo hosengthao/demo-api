@@ -2,7 +2,6 @@
 import dotenv from 'dotenv';
 import devConfig from './dev.config.js';
 
-
 dotenv.config();
 
 let config;

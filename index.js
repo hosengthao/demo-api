@@ -11,11 +11,12 @@ import userRouter from './resources/user/user.router.js';
 import {auth} from './lib/jwt.js';
 //import config from config/index.js
 import config from './config/index.js';
-
+import cors from 'cors';
 
 //creates a constant called app and set it = the express function
 const app = express();
 
+app.use(cors());
 //this uses express to mount(use) the specified middleware function to the specified path. Since these two are mounted without a path, these will be ran for every request to the app.
 //converts body to json first
 app.use(express.json());
